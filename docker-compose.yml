@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  app:
+    env_file: env.list
+    build:
+      context: .
+      dockerfile: ./dockerfiles/app/Dockerfile
+    ports:
+      - "9000:9000"
+    volumes:
+      - app-data:/var/www/application
+    networks:
+      - container_network
+  web:
+    env_file: env.list
+    build:
+      context: .
+      dockerfile: ./dockerfiles/web/Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - container_network
+    volumes:
+      - app-data:/var/www/application
+    depends_on:
+      - "app"
+
+###### 開発用ネットワーク・ボリューム ########
+networks:
+  container_network:
+
+volumes:
+  app-data:
+    driver_opts:
+      type: none
+      device: $PWD/application
+      o: bind
